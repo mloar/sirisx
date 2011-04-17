@@ -1,3 +1,4 @@
+using System;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 
@@ -10,7 +11,7 @@ namespace SiriSX.Analyzer
 
         public AmazonSQSMessageRetrievalInterface()
         {
-            string awsAccessKeyId, awsSecretAccessKey, queueUrl;
+            string awsAccessKeyId, awsSecretAccessKey;
             try
             {
                 System.Configuration.AppSettingsReader settings = new System.Configuration.AppSettingsReader();
@@ -28,7 +29,7 @@ namespace SiriSX.Analyzer
             sqs = new AmazonSQSClient(awsAccessKeyId, awsSecretAccessKey);
         }
 
-        public Message GetNextMessage()
+        public AlertMessage GetNextMessage()
         {
             //Receiving a message
             ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest();
@@ -40,7 +41,7 @@ namespace SiriSX.Analyzer
                 ReceiveMessageResult receiveMessageResult = receiveMessageResponse.ReceiveMessageResult;
                 foreach (Message message in receiveMessageResult.Message)
                 {
-                    Message m;
+                    AlertMessage m = new AlertMessage();
                     Console.WriteLine("  Message");
                     if (message.IsSetMessageId())
                     {
@@ -85,8 +86,7 @@ namespace SiriSX.Analyzer
                     return m;
                 }
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
+    }
+}

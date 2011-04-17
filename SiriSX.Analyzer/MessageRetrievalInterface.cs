@@ -1,14 +1,16 @@
+using System;
+
 namespace SiriSX.Analyzer
 {
-    struct Message
+    class AlertMessage
     {
-        string Subject;
-        string Body;
-        DateTime Date;
+        public string Subject;
+        public string Body;
+        public DateTime Date;
     }
 
     interface MessageRetrievalInterface
     {
-        public Message GetNextMessage();
+        AlertMessage GetNextMessage();
     }
 }
