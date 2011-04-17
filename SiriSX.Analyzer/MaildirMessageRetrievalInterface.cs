@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using anmar.SharpMimeTools;
 
 namespace SiriSX.Analyzer
 {
@@ -51,42 +52,16 @@ namespace SiriSX.Analyzer
             if ((files = newDir.GetFiles()).Length > 0)
             {
                 files[0].MoveTo(Path.Combine(curDir.FullName, files[0].Name + ":2,"));
-                StreamReader message = new StreamReader(files[0].FullName);
+                SharpMessage message;
+                using (FileStream stream = new FileStream(files[0].FullName, FileMode.Open))
+                {
+                    message = new SharpMessage(stream);
+                }
 
                 AlertMessage m = new AlertMessage();
-
-                string s;
-                while ((s = message.ReadLine()) != null)
-                {
-                    if (s.StartsWith("Subject: "))
-                    {
-                        m.Subject = s.Substring(9);
-                    }
-                    else if (s.StartsWith("Date: "))
-                    {
-                        if (s.IndexOf('(') >= 0)
-                        {
-                            s = s.Substring(6, s.IndexOf('(') - 6);
-                        }
-                        else
-                        {
-                            s = s.Substring(6);
-                        }
-                        m.Date = DateTime.Parse(s);
-                    }
-                    else if (string.IsNullOrEmpty(s))
-                    {
-                        break;
-                    }
-                }
-
-                StringBuilder sb = new StringBuilder();
-                while ((s = message.ReadLine()) != null)
-                {
-                    sb.AppendLine(s);
-                }
-
-                m.Body = sb.ToString();
+                m.Date = message.Date;
+                m.Subject = message.Subject;
+                m.Body = message.Body;
 
                 return m;
             }
